@@ -1,0 +1,42 @@
+body {
+	padding: 3em;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 1em;
+}
+
+textarea {
+	resize: none;
+}
+
+.inlineBlock {
+	display: inline-block;
+}
+
+.topAligned {
+	vertical-align: top;
+}
+
+.chat-rooms{
+	float:left;
+	width:100px;
+	border-right:1px solid black;
+	height:300px;
+	padding:10px;
+	overflow:scroll-y;
+}
+
+.chat-messages{
+	float:left;
+	width:300px;
+	height:250px;
+	overflow:scroll-y;
+	padding:10px;
+}
+
+.create-room{
+	float:left;
+	width:300px;
+	height:250px;
+	overflow:scroll-y;
+	padding:10px;
+}
