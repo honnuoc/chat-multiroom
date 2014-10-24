@@ -1,3 +1,4 @@
+/*
 body {
 	padding: 3em;
 	font-family: 'Open Sans', sans-serif;
@@ -39,4 +40,47 @@ textarea {
 	height:250px;
 	overflow:scroll-y;
 	padding:10px;
+}
+*/
+
+body, textarea, input{
+	font: 13px "Trebuchet MS", sans-serif;
+}
+
+.chat{
+	max-width: 300px;
+}
+
+.chat-name, .chat textarea, .chat-messages{
+	border: 1px solid #bbb;
+	width: 100%;
+	padding: 10px;
+}
+
+.chat-messages{
+	height: 300px;
+	overflow-y: scroll;
+}
+
+.chat-message{
+	margin-bottom: 10px;
+}
+
+.chat-name{
+	border-bottom: 0;
+	margin: 0;
+}
+
+.chat textarea{
+	border-top: 0;
+	margin: 0;
+	max-width: 100%;
+}
+
+.chat-status{
+	color: #bbb;
+}
+
+.chat-name, .chat-messages{
+	outline: none;
 }

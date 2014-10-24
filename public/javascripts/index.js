@@ -10,7 +10,7 @@ var socket = io.connect(serverBaseUrl);
 // var socket = io.connect('http://localhost:8000');
 
 socket.on('connect', function(){
-    socket.emit('adduser', prompt("What's your name: "));
+    // socket.emit('adduser', prompt("What's your name: "));
 });
 
 socket.on('updatechat', function (username, data) {
@@ -35,6 +35,43 @@ function switchRoom(room){
 }
 
 $(function(){
+	var getNode = function(s){
+					return document.querySelector(s);
+				},
+
+	//Get required nodes
+	textarea      = getNode('.chat textarea'),
+	messages      = getNode('.chat-messages'),
+	chatName      = getNode('.chat-name'),
+	status        = getNode('.chat-status span'),
+	statusDefault = status.textContent,
+
+	setStatus = function(s){
+		status.textContent = s;
+
+		if ( s !== statusDefault ){
+			var delay = setTimeout(function(){
+				setStatus(statusDefault);
+				clearInterval(delay);
+			}, 3000);
+		}
+	};
+
+	//Listen for keydown
+	textarea.addEventListener('keydown', function(event){
+		var self = this,
+			name = chatName.value;
+
+		if ( event.which === 13 && event.shiftKey === false ){
+			socket.emit('input', {
+				name: name,
+				message: self.value
+			});
+
+			event.preventDefault();
+		}
+
+	});
     $('#datasend').click( function() {
         var message = $('#data').val();
         $('#data').val('');

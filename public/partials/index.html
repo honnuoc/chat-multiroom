@@ -1,0 +1,43 @@
+<div class="page-header">
+	<h1>Chat App</h1>
+</div>
+<div class="row">
+	<div class="col-xs-6">
+		<div class="row">
+			<div class="col-xs-6">
+				<div class="chat">
+					<input type="text" class="chat-name" placeholder="Enter your name" />
+					<div class="chat-messages"></div>
+					<textarea placeholder="Type your message"></textarea>
+					<div class="chat-status">Status: <span>Idle</span></div>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<div class="row" ng-switch on="celebrities.length">
+					<ul ng-switch-when="0">
+						<li>
+							<em>No celebrity in database. Would you like to <a href="#/new">add one</a>?</em>
+						</li>
+					</ul>
+					<ul id="rooms" ng-switch-default>
+						<li ng-repeat="celebrity in celebrities | filter:query">
+							<div ng-switch on="$index">
+								<div ng-switch-when="0">
+									{{celebrity.name}}
+								</div>
+								<div ng-switch-default>
+									<a href="#" onclick="switchRoom('{{celebrity.facebook_id}}')" data-value="{{celebrity.fan_page}}">
+										{{celebrity.name}}
+									</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		&nbsp;
+	</div>
+</div>
