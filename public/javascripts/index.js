@@ -7,37 +7,37 @@ var serverBaseUrl = document.domain;
 */
 var socket = io.connect(serverBaseUrl);
 
-// var socket = io.connect('http://localhost:8000');
+// var socket = io.connect('http://127.0.0.1:7070');
 
 socket.on('connect', function(){
     // socket.emit('adduser', prompt("What's your name: "));
 });
 
-socket.on('updatechat', function (username, data) {
-    $('#conversation').append('<b>'+ username + ':</b> ' + data + '<br>');
-});
+// socket.on('updatechat', function (username, data) {
+//     $('#conversation').append('<b>'+ username + ':</b> ' + data + '<br>');
+// });
 
 
-socket.on('updaterooms', function (rooms, current_room) {
-    $('#rooms').empty();
-    $.each(rooms, function(key, value) {
-        if(value == current_room){
-            $('#rooms').append('<div>' + value + '</div>');
-        }
-        else {
-            $('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
-        }
-    });
-});
+// socket.on('updaterooms', function (rooms, current_room) {
+//     $('#rooms').empty();
+//     $.each(rooms, function(key, value) {
+//         if(value == current_room){
+//             $('#rooms').append('<div>' + value + '</div>');
+//         }
+//         else {
+//             $('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+//         }
+//     });
+// });
 
-function switchRoom(room){
-    socket.emit('switchRoom', room);
-}
+// function switchRoom(room){
+//     socket.emit('switchRoom', room);
+// }
 
-$(function(){
+(function(){
 	var getNode = function(s){
-					return document.querySelector(s);
-				},
+		return angular.element(document.querySelector(s));
+	},
 
 	//Get required nodes
 	textarea      = getNode('.chat textarea'),
@@ -58,20 +58,20 @@ $(function(){
 	};
 
 	//Listen for keydown
-	textarea.addEventListener('keydown', function(event){
-		var self = this,
-			name = chatName.value;
+	// textarea.addEventListener('keydown', function(event){
+	// 	var self = this,
+	// 		name = chatName.value;
 
-		if ( event.which === 13 && event.shiftKey === false ){
-			socket.emit('input', {
-				name: name,
-				message: self.value
-			});
+	// 	if ( event.which === 13 && event.shiftKey === false ){
+	// 		socket.emit('input', {
+	// 			name: name,
+	// 			message: self.value
+	// 		});
 
-			event.preventDefault();
-		}
+	// 		event.preventDefault();
+	// 	}
 
-	});
+	// });
     $('#datasend').click( function() {
         var message = $('#data').val();
         $('#data').val('');
@@ -90,4 +90,4 @@ $(function(){
         $('#roomname').val('');
         socket.emit('create', name)
     });
-});
+})();

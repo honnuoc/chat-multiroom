@@ -6,10 +6,11 @@
 		<div class="row">
 			<div class="col-xs-6">
 				<div class="chat">
-					<input type="text" class="chat-name" placeholder="Enter your name" />
-					<div class="chat-messages"></div>
-					<textarea placeholder="Type your message"></textarea>
-					<div class="chat-status">Status: <span>Idle</span></div>
+					<!-- <div chat-text-area></div> -->
+					<input type="text" class="chat-name" placeholder="Enter your name" ng-model="name" />
+					<div class="chat-messages" ng-model="messages"></div>
+					<textarea placeholder="Type your message" ng-model="chat" ng-keydown="chatType($event)"></textarea>
+					<div class="chat-status" ng-model="status">Status: <span>Idle</span></div>
 				</div>
 			</div>
 			<div class="col-xs-6">
@@ -21,15 +22,23 @@
 					</ul>
 					<ul id="rooms" ng-switch-default>
 						<li ng-repeat="celebrity in celebrities | filter:query">
-							<div ng-switch on="$index">
-								<div ng-switch-when="0">
+							<!-- <div ng-switch on="{{celebrity.facebook_id}}">
+								<div ng-switch-when="{{selected.value}}">
 									{{celebrity.name}}
 								</div>
 								<div ng-switch-default>
-									<a href="#" onclick="switchRoom('{{celebrity.facebook_id}}')" data-value="{{celebrity.fan_page}}">
+									<a href="#" ng-click="switchRoom('{{celebrity.facebook_id}}')" data-value="{{celebrity.fan_page}}">
 										{{celebrity.name}}
 									</a>
 								</div>
+							</div> -->
+							<div ng-show="selected.value == celebrity.facebook_id">
+								{{celebrity.name}}
+							</div>
+							<div ng-show="selected.value != celebrity.facebook_id">
+								<a href="#" ng-click="switchRoom('{{celebrity.facebook_id}}')" data-value="{{celebrity.fan_page}}">
+									{{celebrity.name}}
+								</a>
 							</div>
 						</li>
 					</ul>

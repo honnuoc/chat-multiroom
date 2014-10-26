@@ -47,6 +47,10 @@ body, textarea, input{
 	font: 13px "Trebuchet MS", sans-serif;
 }
 
+.page-header{
+	margin-top: 60px;
+}
+
 .chat{
 	max-width: 300px;
 }
