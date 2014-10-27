@@ -1,14 +1,25 @@
-angular.module('chatApp',
+'use strict';
+
+// Declare app level module which depends on filters, and services
+
+var myApp = angular.module('chatApp',
 	[
-		'chatAppServices'
-	]
-	).
-	config(['$routeProvider', function($routeProvider) {
+		'myApp.controllers',
+		'myApp.filters',
+		'myApp.services',
+		'myApp.directives',
+	]);
+
+myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 		$routeProvider.
-			when('/celebrities', { templateUrl: 'partials/index.html', controller:ChatAppCtrl }).
-			// when('/celebrities/:celebrityId', { templateUrl: 'partials/index.html', controller:ChatAppCtrl }).
-			otherwise({ redirectTo: '/celebrities' });
+			when('/', { templateUrl: 'partials/index.html', controller: "ChatAppCtrl" }).
+			otherwise({ redirectTo: '/' });
+
+		// configure html5 to get links working
+		// If you don't do this, you URLs will be base.com/#/home rather than base.com/home
+		$locationProvider.html5Mode(true);
 	}]);
+
 	// .directive('chatTextArea', function() {
 	// 	var linkFn = function(scope, element, attrs) {
 

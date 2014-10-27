@@ -1,17 +1,16 @@
 extends layout
 
 block content
-	div(ng-view)
-		div.chat-rooms
-			b ROOMS
-			div#rooms
+	div.chat-rooms
+		b ROOMS
+		div#rooms
 
-		div.chat-messages
-			div#conversation
-			input#data(style='width: 200px;')
-			input#datasend(type='button', value='send')
+	div.chat-messages
+		div#conversation
+		input#data(style='width: 200px;')
+		input#datasend(type='button', value='send')
 
-		div.create-room
-			div#room_creation
-			input#roomname(style='width:200px;')
-			input#roombutton(type='button', value='create room')
+	div.create-room
+		div#room_creation
+		input#roomname(style='width:200px;')
+		input#roombutton(type='button', value='create room')

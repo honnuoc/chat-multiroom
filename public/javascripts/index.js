@@ -5,17 +5,11 @@ var serverBaseUrl = document.domain;
 	Note we don't specify a port since we set up our server
 	to run on port 8080
 */
-var socket = io.connect(serverBaseUrl);
+// var socket = io.connect(serverBaseUrl);
 
-// var socket = io.connect('http://127.0.0.1:7070');
+var socket = io.connect('http://127.0.0.1:7070');
 
-socket.on('connect', function(){
-    // socket.emit('adduser', prompt("What's your name: "));
-});
 
-// socket.on('updatechat', function (username, data) {
-//     $('#conversation').append('<b>'+ username + ':</b> ' + data + '<br>');
-// });
 
 
 // socket.on('updaterooms', function (rooms, current_room) {
@@ -34,7 +28,13 @@ socket.on('connect', function(){
 //     socket.emit('switchRoom', room);
 // }
 
-(function(){
+// $(document).ready(function () {
+//     angular.bootstrap(document, ["chatApp"]);
+// });
+
+
+angular.element(document).ready(function(){
+
 	var getNode = function(s){
 		return angular.element(document.querySelector(s));
 	},
@@ -44,6 +44,7 @@ socket.on('connect', function(){
 	messages      = getNode('.chat-messages'),
 	chatName      = getNode('.chat-name'),
 	status        = getNode('.chat-status span'),
+	current_room  = getNode('.current_room'),
 	statusDefault = status.textContent,
 
 	setStatus = function(s){
@@ -56,6 +57,17 @@ socket.on('connect', function(){
 			}, 3000);
 		}
 	};
+
+	// socket.on('connect', function(){
+	// 	console.info(current_room);
+	//     socket.emit('adduser', prompt("What's your name: "), current_room.value );
+	// });
+
+	// socket.on('updatechat', function (username, data) {
+	// 	console.log(username);
+	// 	console.log(data);
+	//     messages.append('<b>'+ username + ':</b> ' + data + '<br>');
+	// });
 
 	//Listen for keydown
 	// textarea.addEventListener('keydown', function(event){
@@ -72,22 +84,22 @@ socket.on('connect', function(){
 	// 	}
 
 	// });
-    $('#datasend').click( function() {
-        var message = $('#data').val();
-        $('#data').val('');
-        socket.emit('sendchat', message);
-    });
+    // $('#datasend').click( function() {
+    //     var message = $('#data').val();
+    //     $('#data').val('');
+    //     socket.emit('sendchat', message);
+    // });
 
-    $('#data').keypress(function(e) {
-        if(e.which == 13) {
-            $(this).blur();
-            $('#datasend').focus().click();
-        }
-    });
+    // $('#data').keypress(function(e) {
+    //     if(e.which == 13) {
+    //         $(this).blur();
+    //         $('#datasend').focus().click();
+    //     }
+    // });
 
-    $('#roombutton').click(function(){
-        var name = $('#roomname').val();
-        $('#roomname').val('');
-        socket.emit('create', name)
-    });
-})();
+    // $('#roombutton').click(function(){
+    //     var name = $('#roomname').val();
+    //     $('#roomname').val('');
+    //     socket.emit('create', name)
+    // });
+});

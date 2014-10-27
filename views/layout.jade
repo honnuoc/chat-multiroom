@@ -11,12 +11,15 @@ html(lang='en', ng-app='chatApp')
 		script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js')
 		script(src='/socket.io/socket.io.js')
 		script(src='/javascripts/services.js')
-		script(src='/javascripts/app.js')
+		script(src='/javascripts/filters.js')
+		script(src='/javascripts/directives.js')
 		script(src='/javascripts/controller.js')
+		script(src='/javascripts/app.js')
 		script(src='/javascripts/index.js')
-	body(ng-controller='ChatAppCtrl')
+
+	body
 		nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
 			div.navbar-header
-				a.navbar-brand(href='#/chatapp')= title
+				a.navbar-brand(href='/')= title
 		div.container
-			block content
+			div(ng-view)

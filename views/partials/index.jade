@@ -1,0 +1,32 @@
+extends layout
+
+block content
+	div.page-header
+		h1 Chat App
+
+	div.row
+		div.col-xs-6
+			div.row
+				div.col-xs-6
+					div.chat
+						<!-- <div chat-text-area></div> -->
+						input(type="text", class="chat-name", placeholder="Enter your name")
+						div#conversation(class="chat-messages")
+						textarea#data(placeholder="Type your message", ng-controller="ChatAppCtrl" ng-keydown="chattype()")
+						div.chat-status
+							| Status:
+							span Idle
+				div.col-xs-6
+					div.row(ng-switch, on="celebrities.length")
+					ul(ng-switch-when="0")
+						li
+							em
+								| No celebrity in database. Would you like to
+								a(href="#/new") add one
+								| ?
+					ul#rooms(ng-switch-default)
+						li(ng-repeat="celebrity in celebrities | filter:query")
+							div(ng-show="selected.value == celebrity.facebook_id") {{celebrity.name}}
+							div(ng-show="selected.value != celebrity.facebook_id")
+								a(href="#", ng-click="switchRoom('{{celebrity.facebook_id}}')") {{celebrity.name}}
+		div.col-xs-6 &nbsp;

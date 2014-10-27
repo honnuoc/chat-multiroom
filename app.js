@@ -71,6 +71,18 @@ var app     = express(),
 	io      = _socketio.listen(server),
 	sockets = io.sockets;
 
+/*
+  The list of participants in our chatroom.
+  The format of each participant will be:
+  {
+	id: "sessionId",
+	name: "participantName"
+  }
+*/
+var participants = [];
+
+var rooms = [];
+
 var host      = 'www.thegamecrafter.com';
 var username  = 'JonBob';
 var password  = '*****';
@@ -147,6 +159,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // });
 
 app.get('/', routes.index);
+// app.get('/home', routes.index);
 app.get('/celebrities', routes.list);
 // app.get('/celebrities/:currentId', routes.list);
 
@@ -175,57 +188,60 @@ connection.connect(function(err) {
 	// 	}
 	// );
 
-	sockets.on('connection', routes.ioconnection);
+	// sockets.on('connection', routes.ioconnection);
 
-	// sockets.on('connection', function(socket) {
-	// 	socket.on('adduser', function(username) {
-	// 		socket.username = username;
-	// 		socket.room = 'Lobby';
-	// 		participants[username] = username;
-	// 		socket.join('Lobby');
-	// 		socket.emit('updatechat', 'SERVER', 'you have connected to Lobby');
-	// 		socket.broadcast.to('Lobby').emit('updatechat', 'SERVER', username + ' has connected to this room');
-	// 		socket.emit('updaterooms', rooms, 'Lobby');
-	// 	});
+	sockets.on('connection', function(socket) {
+		socket.on('adduser', function( current_room, username ) {
+			socket.username = username;
+			socket.room = current_room;
+			participants[username] = username;
+			socket.join(current_room);
+			console.log('co add user');
+			console.log(current_room);
+			console.log(username);
+			socket.emit('updatechat', 'SERVER', 'you have connected to ' + current_room);
+			socket.broadcast.to(current_room).emit('updatechat', 'SERVER', username + ' has connected to this room');
+			socket.emit('updaterooms', rooms, current_room);
+		});
 
-	// 	socket.on('create', function(room) {
-	// 		rooms.push(room);
-	// 		socket.emit('updaterooms', rooms, socket.room);
-	// 	});
+		socket.on('create', function(room) {
+			rooms.push(room);
+			socket.emit('updaterooms', rooms, socket.room);
+		});
 
-	// 	socket.on('sendchat', function(data) {
-	// 		var post  = { user_id: 3, celebrity_id: 8, content: 'test comment with nodejs', created: '2014-10-30'};
-	// 		connection.query('INSERT INTO comments SET ?',
-	// 				post,
-	// 				function(error, result) {
-	// 				if (error) {
-	// 					console.log('ERROR: ' + error);
-	// 					return;
-	// 				}
-	// 				console.log('GENERATED id: ' + result.id);
-	// 			});
-	// 		sockets["in"](socket.room).emit('updatechat', socket.username, data);
-	// 	});
+		socket.on('sendchat', function(data) {
+			var post  = { user_id: 3, celebrity_id: 8, content: 'test comment with nodejs', created: '2014-10-30'};
+			connection.query('INSERT INTO comments SET ?',
+					post,
+					function(error, result) {
+					if (error) {
+						console.log('ERROR: ' + error);
+						return;
+					}
+					console.log('GENERATED id: ' + result.id);
+				});
+			sockets["in"](socket.room).emit('updatechat', socket.username, data);
+		});
 
-	// 	socket.on('switchRoom', function(newroom) {
-	// 		var oldroom;
-	// 		oldroom = socket.room;
-	// 		socket.leave(socket.room);
-	// 		socket.join(newroom);
-	// 		socket.emit('updatechat', 'SERVER', 'you have connected to ' + newroom);
-	// 		socket.broadcast.to(oldroom).emit('updatechat', 'SERVER', socket.username + ' has left this room');
-	// 		socket.room = newroom;
-	// 		socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username + ' has joined this room');
-	// 		socket.emit('updaterooms', rooms, newroom);
-	// 	});
+		socket.on('switchRoom', function(newroom) {
+			var oldroom;
+			oldroom = socket.room;
+			socket.leave(socket.room);
+			socket.join(newroom);
+			socket.emit('updatechat', 'SERVER', 'you have connected to ' + newroom);
+			socket.broadcast.to(oldroom).emit('updatechat', 'SERVER', socket.username + ' has left this room');
+			socket.room = newroom;
+			socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username + ' has joined this room');
+			socket.emit('updaterooms', rooms, newroom);
+		});
 
-	// 	socket.on('disconnect', function() {
-	// 		delete participants[socket.username];
-	// 		sockets.emit('updateusers', participants);
-	// 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-	// 		socket.leave(socket.room);
-	// 	});
-	// });
+		socket.on('disconnect', function() {
+			delete participants[socket.username];
+			sockets.emit('updateusers', participants);
+			socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+			socket.leave(socket.room);
+		});
+	});
 
 	console.log('connected as id ' + connection.threadId);
 });
