@@ -191,17 +191,17 @@ connection.connect(function(err) {
 	// sockets.on('connection', routes.ioconnection);
 
 	sockets.on('connection', function(socket) {
-		socket.on('adduser', function( current_room, username ) {
-			socket.username = username;
-			socket.room = current_room;
-			participants[username] = username;
-			socket.join(current_room);
-			console.log('co add user');
-			console.log(current_room);
-			console.log(username);
-			socket.emit('updatechat', 'SERVER', 'you have connected to ' + current_room);
-			socket.broadcast.to(current_room).emit('updatechat', 'SERVER', username + ' has connected to this room');
-			socket.emit('updaterooms', rooms, current_room);
+		socket.on('adduser', function( data ) {
+			socket.username = data.name;
+			socket.room = data.room;
+			participants[data.name] = data.name;
+			socket.join(data.room);
+			console.log('user was added');
+			console.log(data.room);
+			console.log(data.name);
+			socket.emit('updatechat', 'SERVER', 'you have connected to ' + data.room);
+			socket.broadcast.to(data.room).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+			socket.emit('updaterooms', rooms, data.room);
 		});
 
 		socket.on('create', function(room) {
