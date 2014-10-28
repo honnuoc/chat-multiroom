@@ -19,5 +19,8 @@ References
 Node.js and Socket.io Creating Room
 http://stackoverflow.com/questions/19156636/node-js-and-socket-io-creating-room
 
+Build a real-time polls application with Node.js, Express, AngularJS, and MongoDB
+http://www.ibm.com/developerworks/library/wa-nodejs-polling-app/
+
 AngularJS + Socket.IO - how to update model?
 http://stackoverflow.com/questions/18504028/angularjs-socket-io-how-to-update-model
