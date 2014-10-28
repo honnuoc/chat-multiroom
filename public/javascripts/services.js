@@ -45,7 +45,8 @@ angular.module('myApp.services', ['ngResource']).
 	}])
 	.factory('socket', function($rootScope) {
 		var serverBaseUrl = document.domain;
-		var socket = io.connect(serverBaseUrl);
+		var serverPort = '7070';
+		var socket = io.connect(serverBaseUrl + ':' + serverPort);
 		// var socket = io.connect('http://localhost:7070/');
 		return {
 			on: function (eventName, callback) {

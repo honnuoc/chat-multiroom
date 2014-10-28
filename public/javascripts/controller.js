@@ -18,11 +18,10 @@ angular.module('myApp.controllers', []).
 		messages      = getNode('.chat-messages'),
 		chatName      = getNode('.chat-name'),
 		status        = getNode('.chat-status span'),
-		current_room  = getNode('.current_room'),
-		statusDefault = status.textContent,
+		statusDefault = status.html(),
 
 		setStatus = function(s){
-			status.textContent = s;
+			status.html(s);
 
 			if ( s !== statusDefault ){
 				var delay = setTimeout(function(){
@@ -39,15 +38,10 @@ angular.module('myApp.controllers', []).
 		});
 
 		angular.element(document).ready(function () {
-			console.log('Hello World');
 			socket.on('connect', function(){
-				console.info('co vo ');
-				console.info($scope.selected.value);
 				var username = prompt( "What's your name: ", "Anonymous" );
-				console.info(username);
 				if ( username != null )
 				{
-					$scope.name     = username;
 					socket.emit('adduser', {  room: $scope.selected.value, name: username } );
 				}
 			});
@@ -63,19 +57,18 @@ angular.module('myApp.controllers', []).
 			setStatus((typeof data === 'object') ? data.message : data);
 
 			if ( data.clear === true){
-				textarea.value = '';
+				$scope.area = '';
 			}
 		});
-		// ChatApp.get(function(data) {
+		// ChatApp.query(function(data) {
 		// 	$scope.title = data.title;
 		// 	$scope.celebrities = data.celebrities;
 		// 	$scope.selected = { value: data[0].facebook_id };
-		// 	// console.log($scope.selected);
 		// });
 
 		$scope.chatType = function(){
 			var message = $scope.area;
-			$scope.area = '';
+			// $scope.area = '';
 
 			socket.emit('sendchat', message);
 		};

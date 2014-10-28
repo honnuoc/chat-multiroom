@@ -26,51 +26,15 @@ var _            = require("underscore");
 var querystring  = require('querystring');
 var https        = require('https');
 var _mysql       = require('mysql');
-
-var HOST       = 'localhost';
-var PORT       = 3306;
-var MYSQL_USER = 'root';
-var MYSQL_PASS = '';
-var DATABASE   = 'poundr';
-var TABLE      = '';
-
-var dbConfig = {
-	host     : HOST,
-	port     : PORT,
-	user     : MYSQL_USER,
-	password : MYSQL_PASS,
-	database : DATABASE,
-	debug    : true
-};
-
-// var mysql = _mysql.createClient({
-//     host: HOST,
-//     port: PORT,
-//     user: MYSQL_USER,
-//     password: MYSQL_PASS,
-// });
-
-// mysql.query('use ' + DATABASE);
-
-var connection = _mysql.createConnection( dbConfig );
-
-// var pool = _mysql.createPool({
-// 	host     : HOST,
-// 	port     : PORT,
-// 	user     : MYSQL_USER,
-// 	password : MYSQL_PASS,
-// 	database : DATABASE,
-// 	debug    : true
-// });
-
-var routes = require('./routes/index');
-// var users = require('./routes/users');
+var connection   = require('./public/javascripts/database');
 
 var app     = express(),
 	server  = http.createServer(app),
 	io      = _socketio.listen(server),
 	sockets = io.sockets;
 
+var routes = require('./routes/index.js')(sockets, connection);
+// var users = require('./routes/users');
 /*
   The list of participants in our chatroom.
   The format of each participant will be:
@@ -79,56 +43,56 @@ var app     = express(),
 	name: "participantName"
   }
 */
-var participants = [];
+// var participants = [];
 
-var rooms = [];
+// var rooms = [];
 
-var host      = 'www.thegamecrafter.com';
-var username  = 'JonBob';
-var password  = '*****';
-var apiKey    = '*****';
-var sessionId = null;
-var deckId    = '68DC5A20-EE4F-11E2-A00C-0858C0D5C2ED';
+// var host      = 'www.thegamecrafter.com';
+// var username  = 'JonBob';
+// var password  = '*****';
+// var apiKey    = '*****';
+// var sessionId = null;
+// var deckId    = '68DC5A20-EE4F-11E2-A00C-0858C0D5C2ED';
 
-function performRequest(endpoint, method, data, success) {
-	var dataString = JSON.stringify(data);
-	var headers = {};
+// function performRequest(endpoint, method, data, success) {
+// 	var dataString = JSON.stringify(data);
+// 	var headers = {};
 
-	if (method == 'GET') {
-		endpoint += '?' + querystring.stringify(data);
-	}
-	else {
-		headers = {
-			'Content-Type': 'application/json',
-			'Content-Length': dataString.length
-		};
-	}
-	var options = {
-		host: host,
-		path: endpoint,
-		method: method,
-		headers: headers
-	};
+// 	if (method == 'GET') {
+// 		endpoint += '?' + querystring.stringify(data);
+// 	}
+// 	else {
+// 		headers = {
+// 			'Content-Type': 'application/json',
+// 			'Content-Length': dataString.length
+// 		};
+// 	}
+// 	var options = {
+// 		host: host,
+// 		path: endpoint,
+// 		method: method,
+// 		headers: headers
+// 	};
 
-	var req = https.request(options, function(res) {
-		res.setEncoding('utf-8');
+// 	var req = https.request(options, function(res) {
+// 		res.setEncoding('utf-8');
 
-		var responseString = '';
+// 		var responseString = '';
 
-		res.on('data', function(data) {
-			responseString += data;
-		});
+// 		res.on('data', function(data) {
+// 			responseString += data;
+// 		});
 
-		res.on('end', function() {
-			console.log(responseString);
-			var responseObject = JSON.parse(responseString);
-			success(responseObject);
-		});
-	});
+// 		res.on('end', function() {
+// 			console.log(responseString);
+// 			var responseObject = JSON.parse(responseString);
+// 			success(responseObject);
+// 		});
+// 	});
 
-	req.write(dataString);
-	req.end();
-}
+// 	req.write(dataString);
+// 	req.end();
+// }
 
 //Server's IP address
 app.set("ipaddr", "127.0.0.1");
@@ -159,9 +123,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // });
 
 app.get('/', routes.index);
-// app.get('/home', routes.index);
 app.get('/celebrities', routes.list);
-// app.get('/celebrities/:currentId', routes.list);
 
 // io.set('match origin protocol', true);
 // io.set('origins', '*:*');
@@ -188,79 +150,79 @@ connection.connect(function(err) {
 	// 	}
 	// );
 
-	// sockets.on('connection', routes.ioconnection);
+	sockets.on('connection', routes.ioconnection);
 
-	sockets.on('connection', function(socket) {
-		var sendStatus = function(s){
-				socket.emit('status', s);
-		};
+	// sockets.on('connection', function(socket) {
+	// 	var sendStatus = function(s){
+	// 			socket.emit('status', s);
+	// 	};
 
-		socket.on('adduser', function( data ) {
-			socket.username = data.name;
-			socket.room = data.room;
-			participants[data.name] = data.name;
-			socket.join(data.room);
-			console.log('user was added');
-			console.log(data.room);
-			console.log(data.name);
-			socket.emit('updatechat', 'SERVER', 'you have connected to ' + data.room);
-			socket.broadcast.to(data.room).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
-			socket.emit('updaterooms', rooms, data.room);
-		});
+	// 	socket.on('adduser', function( data ) {
+	// 		socket.username = data.name;
+	// 		socket.room = data.room;
+	// 		participants[data.name] = data.name;
+	// 		socket.join(data.room);
+	// 		console.log('user was added');
+	// 		console.log(data.room);
+	// 		console.log(data.name);
+	// 		socket.emit('updatechat', 'SERVER', 'you have connected to ' + data.room);
+	// 		socket.broadcast.to(data.room).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+	// 		socket.emit('updaterooms', rooms, data.room);
+	// 	});
 
-		socket.on('create', function(room) {
-			rooms.push(room);
-			socket.emit('updaterooms', rooms, socket.room);
-		});
+	// 	socket.on('create', function(room) {
+	// 		rooms.push(room);
+	// 		socket.emit('updaterooms', rooms, socket.room);
+	// 	});
 
-		socket.on('sendchat', function(data) {
-			var name = socket.username,
-				message = data,
-				whitespacePattern = /^\s*$/;
+	// 	socket.on('sendchat', function(data) {
+	// 		var name = socket.username,
+	// 			message = data,
+	// 			whitespacePattern = /^\s*$/;
 
-			if ( whitespacePattern.test(name) || whitespacePattern.test(message) ) {
-				sendStatus("Name and message are required.");
-			} else{
-				var post  = { user_id: 3, celebrity_id: 8, content: data, created: '2014-10-30'};
-				connection.query('INSERT INTO comments SET ?',
-					post,
-					function(error, result) {
-						if (error) {
-							console.log('ERROR: ' + error);
-							return;
-						}
+	// 		if ( whitespacePattern.test(name) || whitespacePattern.test(message) ) {
+	// 			sendStatus("Name and message are required.");
+	// 		} else{
+	// 			var post  = { user_id: 3, celebrity_id: 8, content: data, created: '2014-10-30'};
+	// 			connection.query('INSERT INTO comments SET ?',
+	// 				post,
+	// 				function(error, result) {
+	// 					if (error) {
+	// 						console.log('ERROR: ' + error);
+	// 						return;
+	// 					}
 
-						//Emit latest message to ALL clients in the same room
-						sockets["in"](socket.room).emit('updatechat', name, message);
+	// 					//Emit latest message to ALL clients in the same room
+	// 					sockets["in"](socket.room).emit('updatechat', name, message);
 
-						sendStatus({
-							message: "Message sent",
-							clear: true
-						});
-					}
-				);
-			};
-		});
+	// 					sendStatus({
+	// 						message: "Message sent",
+	// 						clear: true
+	// 					});
+	// 				}
+	// 			);
+	// 		};
+	// 	});
 
-		socket.on('switchRoom', function(newroom) {
-			var oldroom;
-			oldroom = socket.room;
-			socket.leave(socket.room);
-			socket.join(newroom);
-			socket.emit('updatechat', 'SERVER', 'you have connected to ' + newroom);
-			socket.broadcast.to(oldroom).emit('updatechat', 'SERVER', socket.username + ' has left this room');
-			socket.room = newroom;
-			socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username + ' has joined this room');
-			socket.emit('updaterooms', rooms, newroom);
-		});
+	// 	socket.on('switchRoom', function(newroom) {
+	// 		var oldroom;
+	// 		oldroom = socket.room;
+	// 		socket.leave(socket.room);
+	// 		socket.join(newroom);
+	// 		socket.emit('updatechat', 'SERVER', 'you have connected to ' + newroom);
+	// 		socket.broadcast.to(oldroom).emit('updatechat', 'SERVER', socket.username + ' has left this room');
+	// 		socket.room = newroom;
+	// 		socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username + ' has joined this room');
+	// 		socket.emit('updaterooms', rooms, newroom);
+	// 	});
 
-		socket.on('disconnect', function() {
-			delete participants[socket.username];
-			sockets.emit('updateusers', participants);
-			socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-			socket.leave(socket.room);
-		});
-	});
+	// 	socket.on('disconnect', function() {
+	// 		delete participants[socket.username];
+	// 		sockets.emit('updateusers', participants);
+	// 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+	// 		socket.leave(socket.room);
+	// 	});
+	// });
 
 	console.log('connected as id ' + connection.threadId);
 });
@@ -270,6 +232,7 @@ connection.connect(function(err) {
 // 	req.connection = connection;
 // 	next();
 // });
+// app.locals.connection = connection;
 
 app.use('/', routes);
 // app.use('/users', users);
