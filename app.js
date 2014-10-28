@@ -191,6 +191,10 @@ connection.connect(function(err) {
 	// sockets.on('connection', routes.ioconnection);
 
 	sockets.on('connection', function(socket) {
+		var sendStatus = function(s){
+				socket.emit('status', s);
+		};
+
 		socket.on('adduser', function( data ) {
 			socket.username = data.name;
 			socket.room = data.room;
@@ -210,17 +214,32 @@ connection.connect(function(err) {
 		});
 
 		socket.on('sendchat', function(data) {
-			var post  = { user_id: 3, celebrity_id: 8, content: 'test comment with nodejs', created: '2014-10-30'};
-			connection.query('INSERT INTO comments SET ?',
+			var name = socket.username,
+				message = data,
+				whitespacePattern = /^\s*$/;
+
+			if ( whitespacePattern.test(name) || whitespacePattern.test(message) ) {
+				sendStatus("Name and message are required.");
+			} else{
+				var post  = { user_id: 3, celebrity_id: 8, content: data, created: '2014-10-30'};
+				connection.query('INSERT INTO comments SET ?',
 					post,
 					function(error, result) {
-					if (error) {
-						console.log('ERROR: ' + error);
-						return;
+						if (error) {
+							console.log('ERROR: ' + error);
+							return;
+						}
+
+						//Emit latest message to ALL clients in the same room
+						sockets["in"](socket.room).emit('updatechat', name, message);
+
+						sendStatus({
+							message: "Message sent",
+							clear: true
+						});
 					}
-					console.log('GENERATED id: ' + result.id);
-				});
-			sockets["in"](socket.room).emit('updatechat', socket.username, data);
+				);
+			};
 		});
 
 		socket.on('switchRoom', function(newroom) {

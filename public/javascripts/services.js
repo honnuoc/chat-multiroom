@@ -1,6 +1,10 @@
 'use strict';
 
 /* Services */
+angular.module('CacheService', ['ng'])
+	.factory('CacheService', function($cacheFactory) {
+		return $cacheFactory('CacheService');
+	});
 
 angular.module('myApp.services', ['ngResource']).
 	factory('ChatApp', ['$http', function($http) {
@@ -40,7 +44,9 @@ angular.module('myApp.services', ['ngResource']).
 		return obj;
 	}])
 	.factory('socket', function($rootScope) {
-		var socket = io.connect('http://localhost:7070/');
+		var serverBaseUrl = document.domain;
+		var socket = io.connect(serverBaseUrl);
+		// var socket = io.connect('http://localhost:7070/');
 		return {
 			on: function (eventName, callback) {
 				socket.on(eventName, function () {
@@ -127,33 +133,52 @@ angular.module('myApp.services', ['ngResource']).
 		}
 	)
 	// I define an asynchronous wrapper to the native confirm() method. It returns a
-    // promise that will be "resolved" if the user agrees to the confirmation; or
-    // will be "rejected" if the user cancels the confirmation.
-    .factory(
-        "confirm",
-        function( $window, $q ) {
+	// promise that will be "resolved" if the user agrees to the confirmation; or
+	// will be "rejected" if the user cancels the confirmation.
+	.factory(
+		"confirm",
+		function( $window, $q ) {
 
-            // Define promise-based confirm() method.
-            function confirm( message ) {
+			// Define promise-based confirm() method.
+			function confirm( message ) {
 
-                var defer = $q.defer();
+				var defer = $q.defer();
 
-                // The native confirm will return a boolean.
-                if ( $window.confirm( message ) ) {
+				// The native confirm will return a boolean.
+				if ( $window.confirm( message ) ) {
 
-                    defer.resolve( true );
+					defer.resolve( true );
 
-                } else {
+				} else {
 
-                    defer.reject( false );
+					defer.reject( false );
 
-                }
+				}
 
-                return( defer.promise );
+				return( defer.promise );
 
-            }
+			}
 
-            return( confirm );
+			return( confirm );
 
-        }
-    );
+		}
+	)
+	.factory('HackerNewsService', function(CacheService) {
+		return {
+			getNews: function(key) {
+				var news = CacheService.get(key);
+
+				if(news) {
+					return news;
+				}
+
+				return null;
+			},
+			setNews: function(key, value) {
+				CacheService.put(key, value);
+			},
+			clearNews: function(key) {
+				CacheService.put(key, '');
+			}
+		};
+	});

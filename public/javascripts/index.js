@@ -7,10 +7,16 @@ var serverBaseUrl = document.domain;
 */
 // var socket = io.connect(serverBaseUrl);
 
-var socket = io.connect('http://127.0.0.1:7070');
+// var socket = io.connect('http://127.0.0.1:7070');
 
 
+// socket.on('connect', function(){
+//     socket.emit('adduser', prompt("What's your name: "));
+// });
 
+// socket.on('updatechat', function (username, data) {
+//     $('#conversation').append('<b>'+ username + ':</b> ' + data + '<br>');
+// });
 
 // socket.on('updaterooms', function (rooms, current_room) {
 //     $('#rooms').empty();

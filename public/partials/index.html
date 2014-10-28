@@ -7,10 +7,10 @@
 			<div class="col-xs-6">
 				<div class="chat">
 					<!-- <div chat-text-area></div> -->
-					<!-- <input type="text" class="chat-name" ng-model="chat.name" placeholder="Enter your name"/> -->
-					<div id="conversation" class="chat-messages" ng-model="chat.messages"></div>
-					<textarea id="data" placeholder="Type your message" ng-model="chat.area" ng-keydown="chatType($event)"></textarea>
-					<div class="chat-status" ng-model="chat.status">Status: <span>Idle</span></div>
+					<!-- <input type="text" class="chat-name" ng-model="name" placeholder="Enter your name"/> -->
+					<div id="conversation" class="chat-messages" ng-model="messages"></div>
+					<textarea id="data" placeholder="Type your message" ng-model="area" ng-enter="chatType($event)"></textarea>
+					<div class="chat-status" ng-model="status">Status: <span>Idle</span></div>
 				</div>
 			</div>
 			<div class="col-xs-6">
