@@ -86,7 +86,7 @@ module.exports = function(sockets, connection) {
 						}
 						socket.emit('updatechat', data);
 
-						socket.broadcast.to(socket.room.fb_id).emit('updatechat', 'SERVER', socket.user.name + ' has connected to this room');
+						socket.broadcast.to(socket.room.fb_id).emit('updatechat', [{ name: 'SERVER', message: socket.user.name + ' has connected to this room' }]);
 						// socket.emit('updaterooms', rooms, socket.room);
 					}
 				}
