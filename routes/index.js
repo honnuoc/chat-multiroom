@@ -144,18 +144,21 @@ module.exports = function(sockets, connection) {
 						return;
 					}
 
-					//Create the NEW celebrity's info - room
-					var newroom = { id: results[0]['id'], fb_id: fbId, name: results[0]['name'] };
+					if ( results[0].length > 0 )
+					{
+						//Create the NEW celebrity's info - room
+						var newroom = { id: results[0]['id'], fb_id: fbId, name: results[0]['name'] };
 
-					var oldroom;
-					oldroom = socket.room;
-					socket.leave(socket.room.fb_id);
-					socket.join(newroom.fb_id);
-					socket.emit('updatechat', [{ name: 'SERVER', message: 'you have connected to ' + newroom.name }]);
-					socket.broadcast.to(oldroom.fb_id).emit('updatechat', [{ name: 'SERVER', message: socket.user.name + ' has left this room' }]);
-					socket.room = newroom;
-					socket.broadcast.to(newroom.fb_id).emit('updatechat', [{ name: 'SERVER', message: socket.user.name + ' has joined this room' }]);
-					// socket.emit('updaterooms', rooms, newroom);
+						var oldroom;
+						oldroom = socket.room;
+						socket.leave(socket.room.fb_id);
+						socket.join(newroom.fb_id);
+						socket.emit('updatechat', [{ name: 'SERVER', message: 'you have connected to ' + newroom.name }]);
+						socket.broadcast.to(oldroom.fb_id).emit('updatechat', [{ name: 'SERVER', message: socket.user.name + ' has left this room' }]);
+						socket.room = newroom;
+						socket.broadcast.to(newroom.fb_id).emit('updatechat', [{ name: 'SERVER', message: socket.user.name + ' has joined this room' }]);
+						// socket.emit('updaterooms', rooms, newroom);
+					}
 				}
 			);
 		});
