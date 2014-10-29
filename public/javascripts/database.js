@@ -8,12 +8,13 @@ var DATABASE   = 'poundr';
 var TABLE      = '';
 
 var dbConfig = {
-	host     : HOST,
-	port     : PORT,
-	user     : MYSQL_USER,
-	password : MYSQL_PASS,
-	database : DATABASE,
-	debug    : true
+	host               : HOST,
+	port               : PORT,
+	user               : MYSQL_USER,
+	password           : MYSQL_PASS,
+	database           : DATABASE,
+	multipleStatements : true,
+	debug              : false
 };
 
 // var mysql = _mysql.createClient( dbConfig );
