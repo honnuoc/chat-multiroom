@@ -99,33 +99,39 @@ module.exports = function(sockets, connection) {
 		// });
 
 		socket.on('sendchat', function(message) {
-			var name = socket.user.name,
-				message = message,
-				whitespacePattern = /^\s*$/;
+			if ( socket.user !== undefined )
+			{
+				var name = socket.user.name,
+					message = message,
+					whitespacePattern = /^\s*$/;
 
-			if ( whitespacePattern.test(message) ) {
-				sendStatus("Message are required.");
-			} else{
-				var post  = { user_id: socket.user.id, celebrity_id: socket.room.id, content: message, created: new Date()};
-				connection.query('INSERT INTO comments SET ?',
-					post,
-					function(error, result) {
-						if (error) {
-							console.log('ERROR: ' + error);
-							return;
+				if ( whitespacePattern.test(message) ) {
+					sendStatus("Message is required.");
+				} else{
+					var post  = { user_id: socket.user.id, celebrity_id: socket.room.id, content: message, created: new Date()};
+					connection.query('INSERT INTO comments SET ?',
+						post,
+						function(error, result) {
+							if (error) {
+								console.log('ERROR: ' + error);
+								return;
+							}
+
+							//Emit latest message to ALL clients in the same room
+							var data = { name: name, message: message };
+							sockets["in"](socket.room.fb_id).emit('updatechat', [data]);
+
+							sendStatus({
+								message: "Message sent",
+								clear: true
+							});
 						}
-
-						//Emit latest message to ALL clients in the same room
-						var data = { name: name, message: message };
-						sockets["in"](socket.room.fb_id).emit('updatechat', [data]);
-
-						sendStatus({
-							message: "Message sent",
-							clear: true
-						});
-					}
-				);
-			};
+					);
+				};
+			}
+			else{
+				sendStatus("User is required.");
+			}
 		});
 
 		socket.on('switchRoom', function(newFacebookId) {
