@@ -3,11 +3,13 @@
 /* Controllers */
 
 angular.module('myApp.controllers', []).
-	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', function($scope, ChatApp, socket) {
+	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', '$location', '$anchorScroll', function($scope, ChatApp, socket, $location, $anchorScroll) {
 		$scope.name     = '';
 		$scope.messages = '';
 		$scope.area     = '';
 		$scope.status   = '';
+
+		var messagesNumber = 1;
 
 		var getNode = function(s){
 			return angular.element(document.querySelector(s));
@@ -48,8 +50,46 @@ angular.module('myApp.controllers', []).
 		});
 
 		//Listen for output
-		socket.on('updatechat', function (username, data) {
-			messages.append('<b>'+ username + ':</b> ' + data + '<br>');
+		socket.on('updatechat', function (data) {
+			// messages.append('<b>'+ username + ':</b> ' + data + '<br>');
+
+			if ( data instanceof Array && data.length )
+			{
+				messagesNumber = messages.children.length;
+
+				// Loop through data
+				for (var i = data.length - 1; i >= 0; i--) {
+					var newMessage = angular.element('<div></div>');
+
+					newMessage.addClass('chat-message');
+					newMessage.attr('id', 'message' + messagesNumber);
+					newMessage.html('<b>'+ data[i].name + ':</b> ' + data[i].message);
+
+					messages.append(newMessage);
+
+					messagesNumber ++;
+				}
+				messages[0].scrollTop = messages[0].scrollHeight;
+
+				// set the location.hash to the id of
+				// the element you wish to scroll to.
+				// $location.hash('message' + (messagesNumber - 1));
+
+				// call $anchorScroll()
+				// $anchorScroll();
+			}
+			else if ( typeof data === 'object' )
+			{
+				messages.contents('');
+
+				var newMessage = angular.element('<div></div>');
+
+				newMessage.addClass('chat-message');
+				newMessage.attr('id', 'message' + messagesNumber);
+				newMessage.html('<b>'+ data.name + ':</b> ' + data.message);
+
+				messages.append(newMessage);
+			}
 		});
 
 		//Listen for status
@@ -73,11 +113,11 @@ angular.module('myApp.controllers', []).
 			socket.emit('sendchat', message);
 		};
 
-		$scope.switchRoom = function($event, celebrityId){
-			$scope.selected = { value: celebrityId };
+		$scope.switchRoom = function($event, facebookId){
+			$scope.selected = { value: facebookId };
 
-			if(celebrityId) {
-				socket.emit('switchRoom', celebrityId);
+			if( facebookId ) {
+				socket.emit('switchRoom', facebookId);
 			} else {
 				alert('You must select a room to enter');
 			}

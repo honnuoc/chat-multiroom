@@ -27,5 +27,14 @@ var dbConfig = {
 
 var connection = _mysql.createConnection( dbConfig );
 
+connection.on('close', function(err) {
+	if (err) {
+		// Oops! Unexpected closing of connection, lets reconnect back.
+		connection = _mysql.createConnection( dbConfig );
+	} else {
+		console.log('Connection closed normally.');
+	}
+});
+
 // exports.connection = connection;
 module.exports = connection;

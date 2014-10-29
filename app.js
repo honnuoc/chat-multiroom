@@ -1,17 +1,17 @@
 /*
-  Module dependencies:
+	Module dependencies:
 
-  - Express
-  - Http (to run Express)
-  - Body parser (to parse JSON requests)
-  - Underscore (because it's cool)
-  - Socket.IO(Note: we need a web server to attach Socket.IO to)
+	- Express
+	- Http (to run Express)
+	- Body parser (to parse JSON requests)
+	- Underscore (because it's cool)
+	- Socket.IO(Note: we need a web server to attach Socket.IO to)
 
-  It is a common practice to name the variables after the module name.
-  Ex: http is the "http" module, express is the "express" module, etc.
-  The only exception is Underscore, where we use, conveniently, an
-  underscore. Oh, and "socket.io" is simply called io. Seriously, the
-  rest should be named after its module name.
+	It is a common practice to name the variables after the module name.
+	Ex: http is the "http" module, express is the "express" module, etc.
+	The only exception is Underscore, where we use, conveniently, an
+	underscore. Oh, and "socket.io" is simply called io. Seriously, the
+	rest should be named after its module name.
 
 */
 var express      = require('express');
@@ -26,7 +26,7 @@ var _            = require("underscore");
 var querystring  = require('querystring');
 var https        = require('https');
 var _mysql       = require('mysql');
-var connection   = require('./public/javascripts/database');
+var connection   = require('./db/database');
 
 var app     = express(),
 	server  = http.createServer(app),
@@ -36,12 +36,12 @@ var app     = express(),
 var routes = require('./routes/index.js')(sockets, connection);
 // var users = require('./routes/users');
 /*
-  The list of participants in our chatroom.
-  The format of each participant will be:
-  {
+	The list of participants in our chatroom.
+	The format of each participant will be:
+	{
 	id: "sessionId",
 	name: "participantName"
-  }
+	}
 */
 // var participants = [];
 
