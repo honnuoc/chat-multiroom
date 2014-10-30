@@ -107,9 +107,8 @@ angular.module('myApp.controllers', []).
 			if ( typeof data === 'object' )
 			{
 				angular.forEach($scope.conversation, function(value, key) {
-					// console.info(data);
-					if (value.id == data[0].id) {
-						value.likes = data[0].likes;
+					if (value.id == data.id) {
+						value.likes = data.likes;
 					}
 				});
 			}

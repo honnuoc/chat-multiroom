@@ -172,8 +172,6 @@ module.exports = function(sockets, connection) {
 								return;
 							}
 
-							// console.info(result);
-
 							//Emit latest message to ALL clients in the same room
 							var data = { id: result.insertId, name: name, message: message, likes: 0 };
 							sockets["in"](socket.room.fb_id).emit('updatechat', [data]);
@@ -237,14 +235,10 @@ module.exports = function(sockets, connection) {
 							sendStatus("Fail internal error");
 						}
 
-						console.info(results);
-
 						if ( results.length > 0 ) {
 							console.log('fail');
 							sendStatus("You has already liked this comment");
 						} else {
-
-							// console.log('insert');
 
 							connection.query(sql_c_like_cm_users + '; ' + sql_u_cm + '; ' + sql_r_cm,
 								post,
@@ -258,7 +252,7 @@ module.exports = function(sockets, connection) {
 									{
 										//Return the comment's info
 										var cm = { id: results[2][0]['id'], likes: results[2][0]['like_number'] };
-										sockets["in"](socket.room.fb_id).emit('updatelike', [ cm ]);
+										sockets["in"](socket.room.fb_id).emit('updatelike', cm );
 									}
 								}
 							);
