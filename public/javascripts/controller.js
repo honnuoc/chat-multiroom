@@ -4,12 +4,12 @@
 
 angular.module('myApp.controllers', []).
 	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', '$location', '$anchorScroll', function($scope, ChatApp, socket, $location, $anchorScroll) {
-		$scope.name     = '';
-		$scope.messages = '';
-		$scope.area     = '';
-		$scope.status   = '';
+		// $scope.name     = '';
+		// $scope.messages = '';
+		// $scope.area     = '';
+		// $scope.status   = '';
 
-		var messagesNumber = 1;
+		// var messagesNumber = 1;
 
 		var getNode = function(s){
 			return angular.element(document.querySelector(s));
@@ -40,6 +40,7 @@ angular.module('myApp.controllers', []).
 		});
 
 		angular.element(document).ready(function () {
+			$scope.conversation = [];
 			socket.on('connect', function(){
 				var username = prompt( "What's your name: ", "Anonymous" );
 				if ( username != null )
@@ -52,24 +53,29 @@ angular.module('myApp.controllers', []).
 		//Listen for output
 		socket.on('updatechat', function (data) {
 			// messages.append('<b>'+ username + ':</b> ' + data + '<br>');
+			// console.info(data);
 
 			if ( data instanceof Array && data.length )
 			{
-				messagesNumber = messages.children.length;
+				// messagesNumber = messages.children.length;
 
 				// Loop through data
 				for (var i = data.length - 1; i >= 0; i--) {
-					var newMessage = angular.element('<div></div>');
+					// var newMessage = angular.element('<div></div>');
 
-					newMessage.addClass('chat-message');
-					newMessage.attr('id', 'message' + messagesNumber);
-					newMessage.html('<b>'+ data[i].name + ':</b> ' + data[i].message);
+					// newMessage.addClass('chat-message');
+					// newMessage.attr('id', 'message' + messagesNumber);
+					// newMessage.html('<b>'+ data[i].name + ':</b> ' + data[i].message);
 
-					messages.append(newMessage);
+					// messages.append(newMessage);
 
-					messagesNumber ++;
+					var item = { id: data[i].id, name: data[i].name, message: data[i].message, likes: data[i].likes };
+					$scope.conversation.unshift(item);
+
+					// messagesNumber ++;
 				}
-				messages[0].scrollTop = messages[0].scrollHeight;
+				// messages[0].scrollTop = messages[0].scrollHeight;
+				messages[0].scrollTop = 0;
 
 				// set the location.hash to the id of
 				// the element you wish to scroll to.
@@ -80,15 +86,32 @@ angular.module('myApp.controllers', []).
 			}
 			else if ( typeof data === 'object' )
 			{
-				messages.contents('');
+				// messages.empty();
 
-				var newMessage = angular.element('<div></div>');
+				// var newMessage = angular.element('<div></div>');
 
-				newMessage.addClass('chat-message');
-				newMessage.attr('id', 'message' + messagesNumber);
-				newMessage.html('<b>'+ data.name + ':</b> ' + data.message);
+				// newMessage.addClass('chat-message');
+				// newMessage.attr('id', 'message' + messagesNumber);
+				// newMessage.html('<b>'+ data.name + ':</b> ' + data.message);
 
-				messages.append(newMessage);
+				// messages.append(newMessage);
+
+				var item = { id: data.id, name: data.name, message: data.message, likes: data.likes };
+				$scope.conversation.push(item);
+			}
+			// console.info($scope.conversation);
+		});
+
+		//Listen for update 'like'
+		socket.on('updatelike', function (data) {
+			if ( typeof data === 'object' )
+			{
+				angular.forEach($scope.conversation, function(value, key) {
+					// console.info(data);
+					if (value.id == data[0].id) {
+						value.likes = data[0].likes;
+					}
+				});
 			}
 		});
 
@@ -97,7 +120,8 @@ angular.module('myApp.controllers', []).
 			setStatus((typeof data === 'object') ? data.message : data);
 
 			if ( data.clear === true){
-				$scope.area = '';
+				// $scope.area = '';
+				textarea  = '';
 			}
 		});
 		// ChatApp.query(function(data) {
@@ -120,6 +144,14 @@ angular.module('myApp.controllers', []).
 				socket.emit('switchRoom', facebookId);
 			} else {
 				alert('You must select a room to enter');
+			}
+		};
+
+		$scope.loveIt = function($event, commentId){
+			if( commentId ) {
+				socket.emit('loveIt', commentId);
+			} else {
+				alert('You must click on a comment which you love');
 			}
 		};
 	}]);

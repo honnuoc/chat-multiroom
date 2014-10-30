@@ -8,7 +8,14 @@
 				<div class="chat">
 					<!-- <div chat-text-area></div> -->
 					<!-- <input type="text" class="chat-name" ng-model="name" placeholder="Enter your name"/> -->
-					<div id="conversation" class="chat-messages" ng-model="messages"></div>
+					<div id="conversation" class="chat-messages">
+						<div ng-repeat="content in conversation">
+							<div class="chat-message" id="message_{{ $index }}">
+								<b>{{ content.name }}:</b>
+								{{ content.message }} - <a href="" ng-click="loveIt($event, content.id)">{{ content.likes }}</a>
+							</div>
+						</div>
+					</div>
 					<textarea id="data" placeholder="Say something interesting..." ng-model="area" ng-enter="chatType($event)"></textarea>
 					<div class="chat-status" ng-model="status">Status: <span>Idle</span></div>
 				</div>
