@@ -40,7 +40,7 @@ angular.module('myApp.controllers', []).
 		});
 
 		angular.element(document).ready(function () {
-			// $scope.conversation = [];
+
 			socket.on('connect', function(){
 				var username = prompt( "What's your name: ", "Anonymous" );
 				if ( username != null )
