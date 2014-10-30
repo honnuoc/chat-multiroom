@@ -4,10 +4,10 @@
 
 angular.module('myApp.controllers', []).
 	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', '$location', '$anchorScroll', function($scope, ChatApp, socket, $location, $anchorScroll) {
-		// $scope.name     = '';
-		// $scope.messages = '';
-		// $scope.area     = '';
-		// $scope.status   = '';
+		$scope.name     = '';
+		$scope.messages = '';
+		$scope.area     = '';
+		$scope.status   = '';
 
 		// var messagesNumber = 1;
 
@@ -40,7 +40,7 @@ angular.module('myApp.controllers', []).
 		});
 
 		angular.element(document).ready(function () {
-			$scope.conversation = [];
+			// $scope.conversation = [];
 			socket.on('connect', function(){
 				var username = prompt( "What's your name: ", "Anonymous" );
 				if ( username != null )
@@ -55,7 +55,7 @@ angular.module('myApp.controllers', []).
 			// messages.append('<b>'+ username + ':</b> ' + data + '<br>');
 			// console.info(data);
 
-			if ( data instanceof Array && data.length )
+			if ( data instanceof Array )
 			{
 				// messagesNumber = messages.children.length;
 
@@ -69,10 +69,10 @@ angular.module('myApp.controllers', []).
 
 					// messages.append(newMessage);
 
+					// messagesNumber ++;
+
 					var item = { id: data[i].id, name: data[i].name, message: data[i].message, likes: data[i].likes };
 					$scope.conversation.unshift(item);
-
-					// messagesNumber ++;
 				}
 				// messages[0].scrollTop = messages[0].scrollHeight;
 				messages[0].scrollTop = 0;
@@ -96,6 +96,7 @@ angular.module('myApp.controllers', []).
 
 				// messages.append(newMessage);
 
+				$scope.conversation = [];
 				var item = { id: data.id, name: data.name, message: data.message, likes: data.likes };
 				$scope.conversation.push(item);
 			}
@@ -119,8 +120,8 @@ angular.module('myApp.controllers', []).
 			setStatus((typeof data === 'object') ? data.message : data);
 
 			if ( data.clear === true){
-				// $scope.area = '';
-				textarea  = '';
+				$scope.area = '';
+				// textarea  = '';
 			}
 		});
 		// ChatApp.query(function(data) {

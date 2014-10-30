@@ -157,7 +157,7 @@ module.exports = function(sockets, connection) {
 			if ( socket.user !== undefined )
 			{
 				var name = socket.user.name,
-					message = connection.escape(message),
+					message = message,
 					whitespacePattern = /^\s*$/;
 
 				if ( whitespacePattern.test(message) ) {
@@ -192,7 +192,14 @@ module.exports = function(sockets, connection) {
 		socket.on('switchRoom', function(newFacebookId) {
 			var fbId          = connection.escape(newFacebookId);
 			var sql_celebrity = 'SELECT * FROM celebrities WHERE facebook_id = ' + fbId;
-			connection.query(sql_celebrity,
+			var sql_comment   = ' \
+						SELECT comments.id, users.first_name, users.last_name, comments.content, comments.like_number \
+						FROM comments \
+						INNER JOIN users ON comments.user_id = users.id \
+						INNER JOIN celebrities ON comments.celebrity_id = celebrities.id \
+						WHERE celebrities.facebook_id = ' + fbId + ' \
+						ORDER BY comments.created DESC';
+			connection.query(sql_celebrity + '; ' + sql_comment,
 				function(error, results) {
 					if (error) {
 						console.log('ERROR: ' + error);
@@ -202,13 +209,32 @@ module.exports = function(sockets, connection) {
 					if ( results[0].length > 0 )
 					{
 						//Create the NEW celebrity's info - room
-						var newroom = { id: results[0]['id'], fb_id: fbId, name: results[0]['name'] };
+						var newroom = { id: results[0][0]['id'], fb_id: fbId, name: results[0][0]['name'] };
 
 						var oldroom;
 						oldroom = socket.room;
 						socket.leave(socket.room.fb_id);
 						socket.join(newroom.fb_id);
-						socket.emit('updatechat', [{ name: 'SERVER', message: 'you have connected to ' + newroom.name }]);
+						socket.emit('updatechat', { id: null, name: 'SERVER', message: 'you have connected to ' + newroom.name, likes: 100 });
+
+
+						//Emit ALL messages to client
+						var data = [];
+
+						if ( results[1].length > 0 )
+						{
+							for (var i = 0; i < results[1].length; i++) {
+								var item        = {};
+								item['id']      = results[1][i]['id'];
+								item['name']    = results[1][i]['first_name'] + ' ' + results[1][i]['last_name'];
+								item['message'] = results[1][i]['content'];
+								item['likes']   = results[1][i]['like_number'];
+
+								data.push(item);
+							};
+						}
+						socket.emit('updatechat', data);
+
 						socket.broadcast.to(oldroom.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has left this room', likes: 100 }]);
 						socket.room = newroom;
 						socket.broadcast.to(newroom.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has joined this room', likes: 100 }]);
