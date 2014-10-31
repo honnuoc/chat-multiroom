@@ -9,12 +9,16 @@ var myApp = angular.module('chatApp',
 		'myApp.services',
 		'myApp.directives',
 		'CacheService',
+		'infinite-scroll',
 	]);
 
-myApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+myApp.config(['$routeProvider', '$locationProvider', '$httpProvider', function($routeProvider, $locationProvider, $httpProvider) {
 		$routeProvider.
 			when('/', { templateUrl: 'partials/index.html', controller: "ChatAppCtrl" }).
 			otherwise({ redirectTo: '/' });
+
+		$httpProvider.defaults.useXDomain = true;
+    	delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
 		// configure html5 to get links working
 		// If you don't do this, you URLs will be base.com/#/home rather than base.com/home

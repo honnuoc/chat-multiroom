@@ -3,7 +3,7 @@
 /* Controllers */
 
 angular.module('myApp.controllers', []).
-	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', '$location', '$anchorScroll', function($scope, ChatApp, socket, $location, $anchorScroll) {
+	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', 'CommentService', '$location', '$anchorScroll', function($scope, ChatApp, socket, CommentService, $location, $anchorScroll) {
 		$scope.name     = '';
 		$scope.messages = '';
 		$scope.area     = '';
@@ -33,13 +33,50 @@ angular.module('myApp.controllers', []).
 			}
 		};
 
+		$scope.loadMoreComments = function () {
+			if ( $scope.loadingResult ) {
+				return;
+			}
+			if ( $scope.pagination.currentPage >= $scope.pagination.noOfPages ) {
+				return;
+			}
+			$scope.pagination.currentPage = $scope.pagination.currentPage + 1;
+			$scope.offset                 = ($scope.pagination.currentPage - 1) * $scope.pagination.pageSize;
+			$scope.limit                  = $scope.pagination.pageSize;
+			$scope.loadingResult          = true;
+			CommentService.list({ celebrityId: $scope.celebrityId, offset: $scope.offset, limit: $scope.limit}).then(function(result){
+				angular.forEach(result, function(value, key) {
+					$scope.conversation.push(value);
+				});
+				var scrollTop = messages[0].scrollTop;
+				messages[0].scrollTop = scrollTop;
+			});
+			$scope.loadingResult          = false;
+		};
+
+		$scope.initializeResultList = function () {
+			$scope.pagination = {
+				noOfPages   : 1,
+				currentPage : 0,
+				pageSize    : 10
+			};
+
+			CommentService.count({ celebrityId: $scope.celebrityId }).then(function (count) {
+				$scope.total = count;
+				$scope.pagination.noOfPages = Math.ceil( count / $scope.pagination.pageSize );
+				$scope.loadMoreComments();
+			});
+		}
+
 		ChatApp.getCelebrities().then(function(data){
-			$scope.title = data.data.title;
+			$scope.title       = data.data.title;
 			$scope.celebrities = data.data.celebrities;
-			$scope.selected = { value: data.data.celebrities[0].facebook_id };
+			$scope.selected    = { value: data.data.celebrities[0].facebook_id };
 		});
 
 		angular.element(document).ready(function () {
+
+			$scope.conversation = [];
 
 			socket.on('connect', function(){
 				var username = prompt( "What's your name: ", "Anonymous" );
@@ -48,6 +85,15 @@ angular.module('myApp.controllers', []).
 					socket.emit('adduser', {  room: $scope.selected.value, name: username } );
 				}
 			});
+		});
+
+		//Listen for update room
+		socket.on('updatecurrentroom', function (data) {
+			if ( typeof data === 'object' )
+			{
+				$scope.celebrityId = data.id;
+				$scope.initializeResultList();
+			}
 		});
 
 		//Listen for output
@@ -96,7 +142,7 @@ angular.module('myApp.controllers', []).
 
 				// messages.append(newMessage);
 
-				$scope.conversation = [];
+				// $scope.conversation = [];
 				var item = { id: data.id, name: data.name, message: data.message, likes: data.likes };
 				$scope.conversation.push(item);
 			}
@@ -139,6 +185,7 @@ angular.module('myApp.controllers', []).
 
 		$scope.switchRoom = function($event, facebookId){
 			$scope.selected = { value: facebookId };
+			$scope.conversation = [];
 
 			if( facebookId ) {
 				socket.emit('switchRoom', facebookId);

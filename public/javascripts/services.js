@@ -79,6 +79,42 @@ angular.module('myApp.services', ['ngResource']).
 			}
 		};
 	})
+	.factory('CommentService', ['$http', function($http) {
+		delete $http.defaults.headers.common['X-Requested-With'];
+
+		var apiServerBaseUrl = "http://local.poundr.com/index.php?r=api";
+
+		return {
+			count: function(data) {
+				var url = apiServerBaseUrl + "/getnumberofcommentsforapp&celebrity_id=" + data.celebrityId ;
+
+				return $http.get(url).then(function (data) {
+					var number = 0;
+					if ( data.data.status !== undefined && data.data.status == 1 )
+					{
+						number = data.data.data.number;
+					}
+					return number;
+				});
+			},
+			list: function(data) {
+				var url = apiServerBaseUrl + "/getlistofcommentforapp&celebrity_id=" + data.celebrityId + "&offset=" + data.offset + "&limit=" + data.limit;
+				return $http.get(url).then(function (data) {
+					var results = [];
+					if ( data.data.status !== undefined && data.data.status == 1 )
+					{
+						var items = data.data.data;
+						for (var i = 0; i < items.length; i++) {
+							var item = { id: items[i].id, name: items[i]['by_user'].first_name + ' ' + items[i]['by_user'].last_name, message: items[i].content, likes: items[i].like_number };
+							results.push(item);
+						}
+					}
+					// console.info(results);
+					return results;
+				});
+			}
+		};
+	}])
 	.factory("prompt",
 		function( $window, $q ) {
 

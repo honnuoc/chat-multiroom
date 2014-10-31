@@ -4,8 +4,8 @@
 
 angular.module('myApp.directives', []).
 	directive('appVersion', function (version) {
-		return function(scope, elm, attrs) {
-			elm.text(version);
+		return function(scope, element, attrs) {
+			element.text(version);
 		};
 	})
 	.directive('ngEnter', function () {
@@ -20,7 +20,61 @@ angular.module('myApp.directives', []).
 				}
 			});
 		};
+	})
+	.directive('pvScrolled', function() {
+		return function(scope, element, attrs) {
+			console.info(element);
+			var raw = element[0];
+
+			element.bind('scroll', function() {
+				if (raw.scrollTop + raw.offsetHeight >= raw.scrollHeight) {
+					scope.$apply(attrs.pvScrolled);
+				}
+			});
+		};
 	});
+	// .directive("keepScroll", function(){
+
+	// 	return {
+
+	// 		controller : function($scope){
+	// 			var element = null;
+
+	// 			this.setElement = function(el){
+	// 				element = el;
+	// 			}
+
+	// 			this.addItem = function(item){
+	// 				console.log("Adding item", item, item.clientHeight);
+	// 				element.scrollTop = ( element.scrollTop + item.clientHeight + 1 );
+	// 				//1px for margin from your css (surely it would be possible
+	// 				// to make it more generic, rather then hard-coding the value)
+	// 			};
+
+	// 		},
+
+	// 		link : function(scope, el, attr, ctrl) {
+
+	// 			ctrl.setElement(el[0]);
+
+	// 		}
+	// 	};
+	// })
+	// .directive('pvScrolled', function() {
+	// 	return {
+	// 		require : "^keepScroll",
+	// 		controller : function(scope, element, attrs) {
+	// 			console.info(element);
+	// 			var raw = element[0];
+
+	// 			element.bind('scroll', function() {
+	// 				if (raw.scrollTop + raw.offsetHeight >= raw.scrollHeight) {
+	// 					scope.$apply(attrs.pvScrolled);
+	// 				}
+	// 			});
+	// 		}
+	// 	};
+	// });
 
 	// .directive('chatTextArea', function() {
 	// 	var linkFn = function(scope, element, attrs) {

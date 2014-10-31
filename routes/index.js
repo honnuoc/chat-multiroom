@@ -125,24 +125,24 @@ module.exports = function(sockets, connection) {
 						socket.emit('updatechat', { id: null, name: 'SERVER', message: 'you have connected to ' + socket.room.name, likes: 100 });
 
 						//Emit ALL messages to client
-						var data = [];
+						// var data = [];
 
-						if ( results[2].length > 0 )
-						{
-							for (var i = 0; i < results[2].length; i++) {
-								var item        = {};
-								item['id']      = results[2][i]['id'];
-								item['name']    = results[2][i]['first_name'] + ' ' + results[2][i]['last_name'];
-								item['message'] = results[2][i]['content'];
-								item['likes']   = results[2][i]['like_number'];
+						// if ( results[2].length > 0 )
+						// {
+						// 	for (var i = 0; i < results[2].length; i++) {
+						// 		var item        = {};
+						// 		item['id']      = results[2][i]['id'];
+						// 		item['name']    = results[2][i]['first_name'] + ' ' + results[2][i]['last_name'];
+						// 		item['message'] = results[2][i]['content'];
+						// 		item['likes']   = results[2][i]['like_number'];
 
-								data.push(item);
-							};
-						}
-						socket.emit('updatechat', data);
+						// 		data.push(item);
+						// 	};
+						// }
+						// socket.emit('updatechat', data);
 
 						socket.broadcast.to(socket.room.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has connected to this room', likes: 100 }]);
-						// socket.emit('updaterooms', rooms, socket.room);
+						socket.emit('updatecurrentroom', socket.room);
 					}
 				}
 			);
@@ -219,26 +219,26 @@ module.exports = function(sockets, connection) {
 
 
 						//Emit ALL messages to client
-						var data = [];
+						// var data = [];
 
-						if ( results[1].length > 0 )
-						{
-							for (var i = 0; i < results[1].length; i++) {
-								var item        = {};
-								item['id']      = results[1][i]['id'];
-								item['name']    = results[1][i]['first_name'] + ' ' + results[1][i]['last_name'];
-								item['message'] = results[1][i]['content'];
-								item['likes']   = results[1][i]['like_number'];
+						// if ( results[1].length > 0 )
+						// {
+						// 	for (var i = 0; i < results[1].length; i++) {
+						// 		var item        = {};
+						// 		item['id']      = results[1][i]['id'];
+						// 		item['name']    = results[1][i]['first_name'] + ' ' + results[1][i]['last_name'];
+						// 		item['message'] = results[1][i]['content'];
+						// 		item['likes']   = results[1][i]['like_number'];
 
-								data.push(item);
-							};
-						}
-						socket.emit('updatechat', data);
+						// 		data.push(item);
+						// 	};
+						// }
+						// socket.emit('updatechat', data);
 
 						socket.broadcast.to(oldroom.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has left this room', likes: 100 }]);
 						socket.room = newroom;
 						socket.broadcast.to(newroom.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has joined this room', likes: 100 }]);
-						// socket.emit('updaterooms', rooms, newroom);
+						socket.emit('updatecurrentroom', socket.room);
 					}
 				}
 			);
