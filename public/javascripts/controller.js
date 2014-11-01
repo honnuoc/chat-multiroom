@@ -106,7 +106,6 @@ angular.module('myApp.controllers', []).
 		//Listen for output
 		socket.on('updatechat', function (data) {
 			// messages.append('<b>'+ username + ':</b> ' + data + '<br>');
-			console.info(data);
 
 			if ( data instanceof Array )
 			{
@@ -153,7 +152,6 @@ angular.module('myApp.controllers', []).
 				var item = { id: data.id, name: data.name, message: data.message, likes: data.likes };
 				$scope.conversation.unshift(item);
 			}
-			// console.info($scope.conversation);
 		});
 
 		//Listen for update 'like'

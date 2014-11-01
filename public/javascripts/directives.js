@@ -23,7 +23,6 @@ angular.module('myApp.directives', []).
 	})
 	.directive('pvScrolled', function() {
 		return function(scope, element, attrs) {
-			console.info(element);
 			var raw = element[0];
 
 			element.bind('scroll', function() {
