@@ -99,8 +99,14 @@ module.exports = function(sockets, connection) {
 						INNER JOIN users ON comments.user_id = users.id \
 						INNER JOIN celebrities ON comments.celebrity_id = celebrities.id \
 						WHERE celebrities.facebook_id = ' + fbId + ' \
-						ORDER BY comments.created DESC';
-			connection.query(sql_user + '; ' + sql_celebrity + '; ' + sql_comment,
+						ORDER BY comments.created DESC \
+						LIMIT 0, 10';
+			var sql_count_comment   = ' \
+						SELECT COUNT(*) AS cn \
+						FROM comments \
+						INNER JOIN celebrities ON comments.celebrity_id = celebrities.id \
+						WHERE celebrities.facebook_id = ' + fbId ;
+			connection.query(sql_user + '; ' + sql_celebrity + '; ' + sql_count_comment + '; ' + sql_comment,
 				function(error, results) {
 					if (error) {
 						console.log('ERROR: ' + error);
@@ -110,6 +116,7 @@ module.exports = function(sockets, connection) {
 					// console.log(results[0]); // [{1: 1}]
 					// console.log(results[1]); // [{2: 2}]
 					// console.log(results[2]); // [{2: 2}]
+					// console.log(results[3]); // [{2: 2}]
 
 					if ( results[0].length > 0 && results[1].length > 0 )
 					{
@@ -125,24 +132,24 @@ module.exports = function(sockets, connection) {
 						socket.emit('updatechat', { id: null, name: 'SERVER', message: 'you have connected to ' + socket.room.name, likes: 100 });
 
 						//Emit ALL messages to client
-						// var data = [];
+						var data = [];
 
-						// if ( results[2].length > 0 )
-						// {
-						// 	for (var i = 0; i < results[2].length; i++) {
-						// 		var item        = {};
-						// 		item['id']      = results[2][i]['id'];
-						// 		item['name']    = results[2][i]['first_name'] + ' ' + results[2][i]['last_name'];
-						// 		item['message'] = results[2][i]['content'];
-						// 		item['likes']   = results[2][i]['like_number'];
+						if ( results[2].length > 0 && results[3].length > 0 )
+						{
+							for (var i = 0; i < results[3].length; i++) {
+								var item        = {};
+								item['id']      = results[3][i]['id'];
+								item['name']    = results[3][i]['first_name'] + ' ' + results[3][i]['last_name'];
+								item['message'] = results[3][i]['content'];
+								item['likes']   = results[3][i]['like_number'];
 
-						// 		data.push(item);
-						// 	};
-						// }
-						// socket.emit('updatechat', data);
+								data.push(item);
+							};
+						}
+						socket.emit('updatecurrentroom', { room: socket.room, number_of_cm: results[2][0].cn } );
+						socket.emit('updatechat', data);
 
-						socket.broadcast.to(socket.room.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has connected to this room', likes: 100 }]);
-						socket.emit('updatecurrentroom', socket.room);
+						socket.broadcast.to(socket.room.fb_id).emit('updatechat', { id: null, name: 'SERVER', message: socket.user.name + ' has connected to this room', likes: 100 });
 					}
 				}
 			);
@@ -174,7 +181,7 @@ module.exports = function(sockets, connection) {
 
 							//Emit latest message to ALL clients in the same room
 							var data = { id: result.insertId, name: name, message: message, likes: 0 };
-							sockets["in"](socket.room.fb_id).emit('updatechat', [data]);
+							sockets["in"](socket.room.fb_id).emit('updatechat', data);
 
 							sendStatus({
 								message: "Message sent",
@@ -198,8 +205,14 @@ module.exports = function(sockets, connection) {
 						INNER JOIN users ON comments.user_id = users.id \
 						INNER JOIN celebrities ON comments.celebrity_id = celebrities.id \
 						WHERE celebrities.facebook_id = ' + fbId + ' \
-						ORDER BY comments.created DESC';
-			connection.query(sql_celebrity + '; ' + sql_comment,
+						ORDER BY comments.created DESC \
+						LIMIT 0, 10';
+			var sql_count_comment   = ' \
+						SELECT COUNT(*) AS cn \
+						FROM comments \
+						INNER JOIN celebrities ON comments.celebrity_id = celebrities.id \
+						WHERE celebrities.facebook_id = ' + fbId ;
+			connection.query(sql_celebrity + '; ' + sql_count_comment + '; ' + sql_comment,
 				function(error, results) {
 					if (error) {
 						console.log('ERROR: ' + error);
@@ -217,28 +230,28 @@ module.exports = function(sockets, connection) {
 						socket.join(newroom.fb_id);
 						socket.emit('updatechat', { id: null, name: 'SERVER', message: 'you have connected to ' + newroom.name, likes: 100 });
 
+						socket.broadcast.to(oldroom.fb_id).emit('updatechat', { id: null, name: 'SERVER', message: socket.user.name + ' has left this room', likes: 100 });
+						socket.room = newroom;
 
 						//Emit ALL messages to client
-						// var data = [];
+						var data = [];
 
-						// if ( results[1].length > 0 )
-						// {
-						// 	for (var i = 0; i < results[1].length; i++) {
-						// 		var item        = {};
-						// 		item['id']      = results[1][i]['id'];
-						// 		item['name']    = results[1][i]['first_name'] + ' ' + results[1][i]['last_name'];
-						// 		item['message'] = results[1][i]['content'];
-						// 		item['likes']   = results[1][i]['like_number'];
+						if ( results[1].length > 0 && results[2].length > 0 )
+						{
+							for (var i = 0; i < results[2].length; i++) {
+								var item        = {};
+								item['id']      = results[2][i]['id'];
+								item['name']    = results[2][i]['first_name'] + ' ' + results[2][i]['last_name'];
+								item['message'] = results[2][i]['content'];
+								item['likes']   = results[2][i]['like_number'];
 
-						// 		data.push(item);
-						// 	};
-						// }
-						// socket.emit('updatechat', data);
+								data.push(item);
+							};
+						}
+						socket.emit('updatecurrentroom', { room: socket.room, number_of_cm: results[1][0].cn } );					
+						socket.emit('updatechat', data);
 
-						socket.broadcast.to(oldroom.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has left this room', likes: 100 }]);
-						socket.room = newroom;
-						socket.broadcast.to(newroom.fb_id).emit('updatechat', [{ id: null, name: 'SERVER', message: socket.user.name + ' has joined this room', likes: 100 }]);
-						socket.emit('updatecurrentroom', socket.room);
+						socket.broadcast.to(newroom.fb_id).emit('updatechat', { id: null, name: 'SERVER', message: socket.user.name + ' has joined this room', likes: 100 });
 					}
 				}
 			);
@@ -293,7 +306,7 @@ module.exports = function(sockets, connection) {
 			{
 				delete participants[socket.user.name];
 				sockets.emit('updateusers', participants);
-				socket.broadcast.emit('updatechat', [{ name: 'SERVER', message: socket.user.name + ' has disconnected', likes: 100 }]);
+				socket.broadcast.emit('updatechat', { id: null, name: 'SERVER', message: socket.user.name + ' has disconnected', likes: 100 });
 				socket.leave(socket.room.fb_id);
 			}
 		});

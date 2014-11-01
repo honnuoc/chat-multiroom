@@ -44,12 +44,11 @@ angular.module('myApp.controllers', []).
 			$scope.offset                 = ($scope.pagination.currentPage - 1) * $scope.pagination.pageSize;
 			$scope.limit                  = $scope.pagination.pageSize;
 			$scope.loadingResult          = true;
-			CommentService.list({ celebrityId: $scope.celebrityId, offset: $scope.offset, limit: $scope.limit}).then(function(result){
+			CommentService.list({ celebrityId: $scope.celebrityId, offset: $scope.offset, limit: $scope.limit }).then(function(result){
 				angular.forEach(result, function(value, key) {
 					$scope.conversation.push(value);
 				});
-				var scrollTop = messages[0].scrollTop;
-				messages[0].scrollTop = scrollTop;
+				messages[0].scrollTop = messages[0].scrollHeight - 20;
 			});
 			$scope.loadingResult          = false;
 		};
@@ -91,22 +90,30 @@ angular.module('myApp.controllers', []).
 		socket.on('updatecurrentroom', function (data) {
 			if ( typeof data === 'object' )
 			{
-				$scope.celebrityId = data.id;
-				$scope.initializeResultList();
+				$scope.celebrityId = data.room.id;
+				// $scope.initializeResultList();
+				$scope.pagination = {
+					noOfPages   : 1,
+					currentPage : 1,
+					pageSize    : 10
+				};
+
+				$scope.total = data.number_of_cm;
+				$scope.pagination.noOfPages = Math.ceil( $scope.total / $scope.pagination.pageSize );
 			}
 		});
 
 		//Listen for output
 		socket.on('updatechat', function (data) {
 			// messages.append('<b>'+ username + ':</b> ' + data + '<br>');
-			// console.info(data);
+			console.info(data);
 
 			if ( data instanceof Array )
 			{
 				// messagesNumber = messages.children.length;
 
 				// Loop through data
-				for (var i = data.length - 1; i >= 0; i--) {
+				for (var i = 0; i < data.length; i ++) {
 					// var newMessage = angular.element('<div></div>');
 
 					// newMessage.addClass('chat-message');
@@ -118,10 +125,10 @@ angular.module('myApp.controllers', []).
 					// messagesNumber ++;
 
 					var item = { id: data[i].id, name: data[i].name, message: data[i].message, likes: data[i].likes };
-					$scope.conversation.unshift(item);
+					$scope.conversation.push(item);
 				}
 				// messages[0].scrollTop = messages[0].scrollHeight;
-				messages[0].scrollTop = 0;
+				// messages[0].scrollTop = 0;
 
 				// set the location.hash to the id of
 				// the element you wish to scroll to.
@@ -144,7 +151,7 @@ angular.module('myApp.controllers', []).
 
 				// $scope.conversation = [];
 				var item = { id: data.id, name: data.name, message: data.message, likes: data.likes };
-				$scope.conversation.push(item);
+				$scope.conversation.unshift(item);
 			}
 			// console.info($scope.conversation);
 		});

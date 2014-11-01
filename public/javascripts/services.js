@@ -109,7 +109,6 @@ angular.module('myApp.services', ['ngResource']).
 							results.push(item);
 						}
 					}
-					// console.info(results);
 					return results;
 				});
 			}
