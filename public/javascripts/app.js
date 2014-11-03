@@ -17,8 +17,8 @@ myApp.config(['$routeProvider', '$locationProvider', '$httpProvider', function($
 			when('/', { templateUrl: 'partials/index.html', controller: "ChatAppCtrl" }).
 			otherwise({ redirectTo: '/' });
 
-		$httpProvider.defaults.useXDomain = true;
-    	delete $httpProvider.defaults.headers.common['X-Requested-With'];
+		// $httpProvider.defaults.useXDomain = true;
+  //   	delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
 		// configure html5 to get links working
 		// If you don't do this, you URLs will be base.com/#/home rather than base.com/home

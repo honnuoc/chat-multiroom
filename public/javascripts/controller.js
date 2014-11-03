@@ -3,7 +3,9 @@
 /* Controllers */
 
 angular.module('myApp.controllers', []).
-	controller('ChatAppCtrl', ['$scope', 'ChatApp', 'socket', 'CommentService', '$location', '$anchorScroll', function($scope, ChatApp, socket, CommentService, $location, $anchorScroll) {
+	controller('ChatAppCtrl', ['$scope', '$http', 'ChatApp', 'socket', 'CommentService', 'FunctifyService', '$location', '$anchorScroll', function($scope, $http, ChatApp, socket, CommentService, FunctifyService, $location, $anchorScroll) {
+		// delete $http.defaults.headers.common['X-Requested-With'];
+
 		$scope.name     = '';
 		$scope.messages = '';
 		$scope.area     = '';
@@ -102,6 +104,24 @@ angular.module('myApp.controllers', []).
 				$scope.pagination.noOfPages = Math.ceil( $scope.total / $scope.pagination.pageSize );
 			}
 		});
+
+		// FunctifyService.login({ email: 'honnuoc@gmail.com', password: '123'});
+		// FunctifyService.list();
+		// var url = "http://local.functify.com" + "/workout/list";
+		// $http.post(
+		// 	url,
+		// 	{ token: '$2a$13$JUyM4YHvH1O3pd0jaDhSvp', goal: '1', start: '2014-10-17 07:00:00', end: '2014-11-17 07:00:00', jsonp: 'JSON_CALLBACK' }
+		// 	// { "headers" : {
+		// 	// 		"Content-Type" : "application/json; charset=UTF-8",
+		// 	// 		"Access-Control-Allow-Origin" : "*",
+		// 	// 		"Access-Control-Allow-Methods" : "GET, POST, OPTIONS, PUT, PATCH, DELETE",
+		// 	// 		"Access-Control-Allow-Headers" : "Origin, X-Requested-With, Content-Type, Accept",
+		// 	// 		"Access-Control-Allow-Credentials" : true
+		// 	// 	}
+		// 	// }
+		// ).success(function (data) {
+		// 	console.info(data);
+		// });
 
 		//Listen for output
 		socket.on('updatechat', function (data) {

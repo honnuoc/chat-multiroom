@@ -114,6 +114,37 @@ angular.module('myApp.services', ['ngResource']).
 			}
 		};
 	}])
+	.factory('FunctifyService', ['$http', function($http) {
+		// delete $http.defaults.headers.common['X-Requested-With'];
+		// $http.defaults.headers.post["Content-Type"] = "application/json";
+		// $http.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
+		// $http.defaults.headers.post["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, PATCH, DELETE";
+		// $http.defaults.headers.post["Access-Control-Allow-Headers"] = "Origin, Content-Type, Accept";
+		// $http.defaults.headers.post["Access-Control-Allow-Credentials"] = "true";
+
+		var apiServerBaseUrl = "http://local.functify.com";
+
+		return {
+			// list: function(data) {
+			// 	var url = apiServerBaseUrl + "/workout/list" + "?token=$2a$13$JUyM4YHvH1O3pd0jaDhSvp&goal=1&start=2014-10-17&amp;07:00:00&end=2014-11-17&amp;07:00:00" + "&jsonp=JSON_CALLBACK";
+			// 	return $http.jsonp(url).success(function (data) {
+			// 		console.info(data);
+			// 	});
+			// },
+			list: function(data) {
+				var url = apiServerBaseUrl + "/workout/list";
+				return $http.post(url, { token: '$2a$13$deeEFfLQ/QBybFJ7qEWnwu', goal: '1', start: '2014-10-17 07:00:00', end: '2014-11-17 07:00:00'}).success(function (data) {
+					console.info(data);
+				});
+			},
+			login: function(data){
+				var url = apiServerBaseUrl + "/auth/login";
+				return $http.post(url, { email: data.email, password: data.password }).success(function (data) {
+					console.info(data);
+				});
+			}
+		};
+	}])
 	.factory("prompt",
 		function( $window, $q ) {
 
