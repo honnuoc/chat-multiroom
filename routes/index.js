@@ -248,7 +248,7 @@ module.exports = function(sockets, connection) {
 								data.push(item);
 							};
 						}
-						socket.emit('updatecurrentroom', { room: socket.room, number_of_cm: results[1][0].cn } );					
+						socket.emit('updatecurrentroom', { room: socket.room, number_of_cm: results[1][0].cn } );
 						socket.emit('updatechat', data);
 
 						socket.broadcast.to(newroom.fb_id).emit('updatechat', { id: null, name: 'SERVER', message: socket.user.name + ' has joined this room', likes: 100 });
