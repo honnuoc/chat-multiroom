@@ -11,7 +11,7 @@ angular.module('myApp.services', ['ngResource']).
 		// return $resource('/celebrities/:celebrityId/', { celebrityId: '@celebrityId'}, {
 		// 	query: { method: 'GET', params: { celebrityId: '@celebrityId' }, isArray: true }
 		// });
-		var serviceBase = 'http://localhost:7070/'
+		var serviceBase = 'http://127.0.0.1:7070/'
 		var obj = {};
 		obj.getCelebrities = function(){
 			return $http.get(serviceBase + 'celebrities');
